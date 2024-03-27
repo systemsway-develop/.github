@@ -1,0 +1,66 @@
+name: Build OrgMind
+run-name: Build OrgMind Job Triggered by ${{ github.actor }} 🚀
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - edited
+      - reopened
+    branches:
+      - 'feature-**'
+jobs:
+  Build-OrgMindWeb:
+    runs-on: ["self-hosted", "gateway"]
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+          pwd
+          ls -lrt
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
+      - name: Setup gcloud
+        uses: "google-github-actions/setup-gcloud@v2"
+      - name: Run orgmindweb Build
+        run: |
+          cd CDLC/codebuild
+          bash build.bash ${{ github.sha }} ${{ github.job }} ${{ github.run_number }} orgmindweb node_next_app FrontEnd/orgmindweb
+      - name: Print Job Status
+        run: echo "🍏 This job's status is ${{ job.status }}."
+  Build-OrgMindServ:
+    runs-on: ["self-hosted", "gateway"]
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
+          pwd
+          ls -lrt
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          credentials_json: "${{ secrets.SERVICE_ACCOUNT_KEY }}"
+      - name: Setup gcloud
+        uses: "google-github-actions/setup-gcloud@v2"
+      - name: Run orgmindserv Build
+        run: |
+          cd CDLC/codebuild
+          bash build.bash ${{ github.sha }} ${{ github.job }} ${{ github.run_number }} orgmindserv golang_service BackEnd/orgmindserv
+      - name: Print Job Status
+        run: echo "🍏 This job's status is ${{ job.status }}."
